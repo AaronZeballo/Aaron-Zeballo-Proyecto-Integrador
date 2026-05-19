@@ -1,0 +1,197 @@
+\documentclass[a4paper,10pt]{book}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{ragged2e}
+%\usepackage{mathtools}makeglossaries %.tex
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+\usepackage[spanish, es-tabla]{babel}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{incgraph,tikz}
+%\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsfonts}
+%\usepackage{babel}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{adjustbox}
+\usepackage{natbib}
+\usepackage{xcolor}
+\usepackage{titlepic}
+\usepackage{amsmath}
+\usepackage{cleveref}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{etoolbox}
+%\usepackage{cite}    
+\usepackage{bm}
+\usepackage{makecell}
+\usepackage{placeins}
+
+
+
+\usepackage{listings}
+\lstset{ %
+basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+numbers=none,                   % where to put the line-numbers
+numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
+stepnumber=1,                   % the step between two line-numbers. If it is 1 each line will be numbered
+numbersep=10pt,                  % how far the line-numbers are from the code
+backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+showspaces=false,               % show spaces adding particular underscores
+showstringspaces=false,         % underline spaces within strings
+showtabs=false,                 % show tabs within strings adding particular underscores
+frame=single,           % adds a frame around the code
+tabsize=4,          % sets default tabsize to 2 spaces
+captionpos=b,           % sets the caption-position to bottom
+breaklines=true,        % sets automatic line breaking
+breakatwhitespace=false,    % sets if automatic breaks should only happen at whitespace
+escapeinside={\%*}{*)}          % if you want to add a comment within your code
+}
+
+
+
+\usetikzlibrary{arrows}
+
+\captionsetup[subfigure]{subrefformat=simple,labelformat=simple}
+
+\renewcommand{\contentsname}{\'Indice General}
+\renewcommand{\listfigurename}{\'Indice de Figuras}
+\renewcommand{\listtablename}{\'Indice de Tablas}
+\renewcommand{\lstlistingname}{Salida}
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\figurename}{Figura}
+\renewcommand\thesubfigure{(\alph{subfigure})}
+\renewcommand{\baselinestretch}{1.2} 
+
+\makeatletter
+\def\verbatim{\small\@verbatim \frenchspacing\@vobeyspaces \@xverbatim}
+\makeatother
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot{}
+
+\fancyhead[LE]{\nouppercase{\leftmark}}
+\fancyhead[RO]{\nouppercase{\leftmark}}
+
+\fancyfoot[C]{\thepage}
+
+\renewcommand{\headrulewidth}{0.4pt}
+
+
+
+%\restylefloat{table}
+
+
+\definecolor{TPcolor}{HTML}{A9D18E} % Verde claro para TP
+\definecolor{TNcolor}{HTML}{D9EAD3} % Verde muy claro para TN
+\definecolor{FPcolor}{HTML}{F4CCCC} % Rojo muy claro para FP
+\definecolor{FNcolor}{HTML}{E06666} % Rojo claro para FN
+
+\title{Estudio de Tecnicas de Aprendizaje Automatico
+Supervisado usando Sobremuestreo de Datos}
+\author{Autor: Aarón Zeballo  \\ Tutora: Dra. Andrea Rey}
+\date{Universidad Nacional de Hurlingham (UNAHUR)}
+\titlepic{\vspace{12cm}\includegraphics[width=0.15\textwidth]{logo.jpg}}
+
+\usepackage{titlesec}
+
+% Chapters justificados
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries\justifying} % estilo del capítulo
+{\chaptername\ \thechapter}{20pt}{\Huge}
+
+% Sections justificados
+\titleformat{\section}
+{\normalfont\Large\bfseries\justifying} % estilo de la sección
+{\thesection}{1em}{}
+
+% Subsections justificados
+\titleformat{\subsection}
+{\normalfont\large\bfseries\justifying}
+{\thesubsection}{1em}{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{document}
+
+
+\maketitle
+
+
+	\tableofcontents
+	
+	\addcontentsline{toc}{chapter}{Índice de Figures}
+	\renewcommand{\listfigurename}{Índice de Figuras}
+	\listoffigures
+	
+	\addcontentsline{toc}{chapter}{Índice de Tablas}
+    \renewcommand{\listtablename}{Índice de Tablas}
+	\listoftables
+
+
+
+\chapter*{Resumen}
+
+\noindent
+
+
+
+\chapter{Introducción}
+
+
+
+\section{Motivación}
+
+\section{Estado del Arte}
+
+\section{Conjuntos de Datos}
+
+
+\chapter{Metodología}
+\label{ch:metodologia}
+
+\section{Preparación y desbalanceo artificial}
+Partiendo de un conjunto de datos originalmente equilibrado, se procedio a eliminar de forma aleatoria filas correspondientes a la clase positiva (spam) para generar un dataset desequilibrado. De esta manera, conservé únicamente un 5\% de casos de spam, lo que permitió simular un entorno con un desbalanceo severo y más ajustado a la realidad de una bandeja de entrada habitual.
+
+A continuación, se realizo la división de los datos en conjuntos de entrenamiento y testeo (\textit{train-test split}), asignando un 80\% de los datos para el entrenamiento de los modelos y el 20\% restante para la posterior etapa de evaluación.
+
+\section{Preprocesamiento y estandarización}
+Una vez realizada la partición del dataset, procedí a estandarizar las características utilizando la herramienta \texttt{StandardScaler} de la librería \textit{scikit-learn}. Para asegurar la integridad del experimento y evitar la filtración de datos (\textit{data leakage}), el ajuste (\textit{fit}) del escalador se realizó exclusivamente sobre el conjunto de entrenamiento, utilizándolo luego para transformar (\textit{transform}) ambos conjuntos. Este paso resultó fundamental para garantizar el correcto funcionamiento de los modelos basados en distancias, como las Máquinas de Soporte Vectorial.
+
+\section{Técnicas de balanceo (Oversampling)}
+Con los datos ya estandarizados, apliqué técnicas de sobremuestreo sobre el conjunto de entrenamiento para mitigar el impacto del desbalanceo. Específicamente, implementé los métodos SMOTE y ADASYN. En ambos algoritmos se configuró el parámetro \texttt{sampling\_strategy=0.4}, lo que permitió incrementar la clase minoritaria de forma sintética hasta que representara el 40\% del tamaño de la clase mayoritaria, alcanzando así una relación final aproximada de 70/30 en los datos de entrenamiento.
+
+\section{Entrenamiento de modelos}
+Tras el procesamiento y balanceo de los datos, sen entrenaron tres algoritmos de aprendizaje automático para comparar su comportamiento:
+\begin{itemize}
+    \item Random Forest 
+    \item Máquinas de Soporte Vectorial 
+    \item Árbol de Decisión 
+\end{itemize}
+Para garantizar la reproducibilidad de todas las pruebas, se estableció una semilla aleatoria fija en cada uno de los clasificadores.
+
+\section{Evaluación de resultados}
+Finalmente, una vez finalizado el entrenamiento, evalué el desempeño de los modelos utilizando el conjunto de testeo (el 20\% de los datos originalmente reservados). Para analizar los resultados de manera integral y evitar los sesgos que produce la evaluación con datos desbalanceados, se registraron y contrastaron las métricas de \textit{Accuracy} (exactitud), \textit{Precision} (precisión), \textit{Recall} (sensibilidad) y \textit{F1-Score}.
+\label{ch:resultados}
+
+
+\chapter{Conclusiones}
+
+\bibliographystyle{plain}
+\bibliography{Referencias}
+\addcontentsline{toc}{chapter}{Bibliografía}
+
+\end{document}
