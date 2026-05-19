@@ -1,3 +1,0 @@
-https://www.kaggle.com/datasets/fedesoriano/company-bankruptcy-prediction
-
-https://www.kaggle.com/datasets/somesh24/spambase
