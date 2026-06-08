@@ -1,4 +1,4 @@
-\documentclass[a4paper,10pt]{book}
+\documentclass[a4paper,11pt]{book}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -6,7 +6,7 @@
 %\usepackage{mathtools}makeglossaries %.tex
 \usepackage{graphicx}
 \usepackage[margin=1in]{geometry}
-\usepackage[spanish, es-tabla]{babel}
+\usepackage[spanish, es-tabla, es-noquoting]{babel}
 \usepackage[hidelinks]{hyperref}
 \usepackage{fancyhdr}
 \usepackage{incgraph,tikz}
@@ -149,48 +149,206 @@ Supervisado usando Sobremuestreo de Datos}
 
 
 
-\chapter{Introducción}
+\chapter{Introducción y Marco Teórico}
+\label{ch:introduccion}
+
+\section{Introducción y Motivación}
 
 
 
-\section{Motivación}
+\subsection{Orígenes y Evolución del Correo No Deseado}
+
+Históricamente, el primer incidente documentado de correo electrónico no deseado ,\textit{spam} ocurrió el 3 de mayo de 1978. Gary Thuerk, un gerente de marketing de la empresa Digital Equipment Corporation (DEC), envió un mensaje promocionando un nuevo modelo de computadora a casi 400 usuarios de ARPANET (la red precursora de internet, en ese entonces de uso restringido)~\cite{templeton1978spam}. Esta acción, que consistió en escribir manualmente cientos de direcciones, generó un fuerte rechazo entre la comunidad científica de la época, pero sentó el precedente de lo que más tarde se convertiría en una industria masiva.
+
+El verdadero punto de inflexión tecnológico ocurrió en abril de 1994, cuando un par de abogados estadounidenses utilizaron un programa para enviar publicidad masiva sobre la lotería de visas de Estados Unidos a miles de grupos de noticias en la red \textit{Usenet}. Este evento, conocido históricamente como el "Green Card Spam" ~\cite{wired1999greencard}, demostró al mundo que, gracias a la automatización, un individuo podía contactar a millones de personas a un costo casi nulo, marcando el nacimiento del \textit{spam} comercial moderno. 
+
+Con la popularización de internet a fines de la década de los 90 y principios de los 2000, el ecosistema del correo basura evolucionó drásticamente hacia la ciberdelincuencia. Los atacantes dejaron de usar sus propios servidores para evitar ser rastreados, y comenzaron a utilizar \textit{botnets}. Las \textit{botnets} son redes globales compuestas por miles o millones de computadoras personales de usuarios comunes que han sido previamente infectadas en secreto por un virus. Los atacantes controlan estas computadoras  a distancia para que envíen millones de mensajes por minuto, volviendo la amenaza indetectable y masiva.
+
+Actualmente, el correo no deseado es un problema de seguridad informática crítico. La amenaza ha madurado considerablemente: ya no se trata solamente de publicidad molesta o correos irrelevantes, sino que es la herramienta principal del cibercrimen organizado. A través de estos correos se distribuyen constantemente ataques de secuestro de datos (\textit{ransomware}), intentos de robo de contraseñas (\textit{phishing}) y diversos programas maliciosos (\textit{malware}).
+
+El impacto de este problema afecta gravemente en dos niveles principales:
+Por un lado, a nivel corporativo y a gran escala, el \textit{spam} inunda las redes empresariales. Esto no solo satura el ancho de banda y el almacenamiento de los servidores de las compañías, sino que hace perder innumerables horas de trabajo al personal de soporte técnico que debe lidiar con la basura digital. Peor aún, existe el riesgo inminente de que un empleado abra un archivo adjunto infectado en un correo disfrazado , permitiendo que los ciberdelincuentes vulneren las defensas y accedan a datos privados de la empresa, desencadenando pérdidas millonarias o extorsiones.
+
+Por otro lado, a nivel personal, los usuarios comunes se encuentran en la primera línea de fuego. Diariamente se enfrentan a correos engañosos diseñados con ingeniería social para parecer alertas de sus bancos o mensajes de la administración pública. Caer en estos engaños puede resultar en el vaciado de sus cuentas bancarias, fraudes con tarjetas de crédito, robo de identidad o la inutilización total de sus dispositivos personales a causa de virus destructivos.
+
+Para ejemplificar la problemática, considero oportuno mostrar ejemplos recientes que demuestran el peligro al que se exponen las empresas y usuarios si un correo malicioso pasa los filtros de seguridad:
+
+En primer lugar, la red Emotet, considerada por Europol como el \textit{malware} más peligroso del mundo hasta su desmantelamiento en 2021~\cite{europol2021emotet}. Emotet operaba principalmente a través de inmensas campañas automatizadas de \textit{spam}. Los atacantes enviaban correos electrónicos que simulaban ser facturas legítimas, notificaciones de envíos o alertas de bancos conocidos, que contenían documentos infectados. Una vez que el usuario abría el archivo, el virus se instalaba en silencio, permitiendo a los delincuentes robar credenciales bancarias o instalar \textit{ransomware} en toda la red de la empresa. Este método de propagación por correo causó daños globales estimados en cientos de millones de dólares.
+
+Por otro lado, durante los últimos años, Argentina ha sufrido oleadas masivas de campañas de \textit{phishing} mediante correos electrónicos diseñados para robar contraseñas de plataformas de uso cotidiano, siendo el caso de Mercado Pago uno de los más notorios y destructivos~\cite{eset2023mercadopago}. 
+
+En esta modalidad, los ciberdelincuentes envían correos falsos avisando a los usuarios que su cuenta ha sido bloqueada por actividad sospechosa. Debido al miedo a perder su dinero, la víctima hace clic en el enlace proporcionado, el cual la dirige a una página web visualmente idéntica a la original. Al ingresar sus datos, los atacantes toman el control total de la billetera virtual. Esto resulta en innumerables casos de vaciado de cuentas e incluso en la toma de préstamos a nombre de las víctimas. Este tipo de fraude genera daños financieros en familias, las cuales sufren la pérdida de sus ahorros o quedan endeudadas por un correo electrónico que no fue filtrado correctamente.
+
+\subsection{El Desafío del Desbalanceo de Clases}
+Los métodos de filtrado tradicionales, basados en reglas fijas como bloquear correos que contengan la palabra "gratis"  o rechazar conexiones de ciertas direcciones IP, quedaron rápidamente obsoletos. Los atacantes encontraron formas sencillas de esquivar estos bloqueos alterando la escritura de las palabras. Por este motivo, la industria de la ciberseguridad se volcó hacia el Aprendizaje Automático (\textit{Machine Learning}), utilizando algoritmos dinámicos capaces de identificar patrones  tanto en el texto como en la estructura de los correos.
+
+Pero al intentar entrenar  estos algoritmos, surge un gran problema : el desbalanceo natural de los datos. Ya sea en una cuenta empresarial o en una cuenta de correo electrónico personal, la  mayoría de los correos que se reciben diariamente son legítimos. Los correos  maliciosos representan solo una minoría. 
+
+Cuando le entregamos esta información desbalanceada a un algoritmo  para que aprenda, el modelo ,al tratar de tener el mayor porcentaje de aciertos suele ignorar la clase minoritaria ,termiando con valores altos en acierts totales pero volviendose totalmente ineficiente a la hora de detectar y separar los ejemplos de la clase minoritaria,dejando pasar correos maliciosos y potencialmente peligrosos para los usuarios .
+
+\subsection{Motivación y Objetivo General}
+Identificar y filtrar los correos maliciosos se debe hacer de forma automática y con un margen mínimo, ya que los dos tipos de errores posibles tienen consecuencias graves. Si el filtro es demasiado estricto y marca un correo normal como \textit{spam} ( Falso Positivo), un usuario podría perder un correo de trabajo urgente, una oferta laboral o el aviso de vencimiento de un servicio. Por el contrario, si el filtro es demasiado laxo y deja pasar un correo peligroso tratándolo como legítimo (Falso Negativo), las consecuencias van desde el vaciamiento de una cuenta bancaria personal hasta la infección de toda una red empresarial por un virus. 
+
+El problema es que existe una balanza entre estos dos errores: cuando buscamos que el filtro  atrape absolutamente todas las amenazas, el sistema se vuelve empieza a tratar correos electronicos legitimos como si fueran correos no deseados . Encontrar el punto de equilibrio exacto entre atrapar \textit{spam} y que los usuarios no pierdan correos impotantes sera de vital importancia.
+
+El trabajo se propone comparar cómo funcionan diferentes modelos de Aprendizaje Automático frente a un conjunto de datos que ha sido equilibrado mediante la creación de ejemplos sintéticos artificiales. 
+
+Para alcanzar esta meta, se estableceran los siguientes objetivos:
+\begin{itemize}
+    \item Implementar y comparar el rendimiento de tres clasificadores de distinta naturaleza matemática: Árbol de Decisión, Random Forest y Máquinas de Soporte Vectorial (SVM).
+    \item Evaluar distintas técnicas de balanceo de datos, partiendo desde el clasico SMOTE ,Pasando por ADASYN  enfocado en las frontera de decisión y metodos mas modernos que buscan se la evolucion de los anterioress ,tales como G-SMOTE y ADASYN + ENN.
+    \item Comparar y mostrar resultados atraves de metricas robustas frente al desbalanceo tales como \textit{recall} y \textit{F1-Score}.
+\end{itemize}
+
 
 \section{Estado del Arte}
 
-\section{Conjuntos de Datos}
+
+\subsection{Los Primeros Intentos}
+El problema del desequilibrio de clases no es nuevo . A principios de la década de los 2000, las primeras estrategias para intentar resolver este sesgo eran bastante básicas y se realizaban directamente sobre los datos crudos. Las dos técnicas principales consistían en borrar al azar ejemplos de la clase mayoritaria (conocido como \textit{Random Undersampling}) o simplemente duplicar los correos de la clase minoritaria copiándolos exactamente iguales varias veces (\textit{Random Oversampling}). 
+Tal como recoge Chawla en sus investigaciones \cite{chawla2002smote}, estas técnicas traían graves problemas técnicos. El submuestreo provocaba una pérdida masiva de información útil, ya que se borraban correos legítimos que el modelo necesitaba para aprender. Por su parte, la duplicación exacta de datos causaba un fenómeno de sobreajuste (\textit{overfitting}); el modelo no aprendía a generalizar los patrones de un ataque, sino que se limitaba a memorizar de forma exacta los pocos correos maliciosos repetidos.
+
+\subsection{La Revolución de los Datos Sintéticos}
+El verdadero cambio de paradigma en el manejo de datos desbalanceados ocurrió en  2002 con la publicación de \textit{SMOTE: Synthetic Minority Over-sampling Technique} por Nitesh V. Chawla y su equipo \cite{chawla2002smote}. 
+En lugar de copiar correos existentes, SMOTE introdujo la idea de "crear" nuevos ejemplos  que tuvieran características extaidas desde los ejemplos originales . Para lograrlo, el algoritmo toma un ejemplo de la clase minoritaria, busca a sus vecinos más cercanos, y traza líneas rectas entre ellos para generar nuevos puntos artificiales a lo largo de esa trayectoria. Esta técnica logró expandir el territorio de la clase minoritaria de forma segura, evitando que el modelo memorizara copias exactas y convirtiéndose rápidamente en el estándar de la industria.
+
+A pesar de su  éxito,  SMOTE tiene una debilidad: genera datos sintéticos de manera uniforme para todos los ejemplos de la clase minoritaria. Esto significa que crea datos tanto en zonas seguras como en zonas fronterizas  (donde los ejemplos de la clase minoitaria se mezclaban con los datos de la clase mayoritaria ), lo que  termina generando ruido.
+Para solucionar este defecto,Haibo He, Yang Bai, Shutao Li y Edwardo A. Garcia. \cite{he2008adasyn} desarrollaron en 2008 el algoritmo ADASYN (\textit{Adaptive Synthetic}). ADASYN mejoró la propuesta de SMOTE agregando una capa de "inteligencia" matemática. El algoritmo calcula primero qué tan difícil es de clasificar cada correo de \textit{spam} original. Luego, procede a la creación de datos sintéticos únicamente alrededor de aquellos correos que están en la frontera más conflictiva. De esta forma, el algoritmo le presta mayor atención a los casos engañosos y no en las regiones que el modelo ya domina y no son conflictivas.
+
+\subsection{Enfoques modernos}
+La búsqueda por lograr la mejora en la creacion de datos sinteticos a continuado evolucionando . En años recientes, investigaciones como las de Douzas y Bacao propusieron Geometric SMOTE (G-SMOTE) \cite{douzas2019gsmote}. En lugar de trazar líneas rectas que pueden invadir el territorio de la clase mayoritaria, G-SMOTE restringe la generación de datos sintéticos al interior de  esferas alrededor de las observaciones de la clase minoritaria , reduciendo la creación de ruido.
+Paralelamente, investigaciones clásicas como las de Batista  \cite{batista2004study} demostraron que, en conjuntos de datos muy complejos, crear datos no siempre es suficiente. Esto dio origen a los métodos híbridos, que combinan técnicas generativas (como SMOTE) con algoritmos de limpieza (como \textit{Edited Nearest Neighbours} , ENN). En el cual , primero se crean datos sinteticos de la clase minoritaria y luego se utilizan el algoritmos de limpieza  para borrar todos los ejemplos que hayan quedado mal posicionados. Este doble esfuerzo produce zonas de decisión mejores..
+
+\section{Conjunto de Datos}
+Para el desarrollo de este trabajo se utilizó el conjunto de datos público \textit{Spam Email Classification}. La clase positiva (\textit{spam}) en este conjunto de datos incluye anuncios de productos no solicitados, correos con potencial de estafa  y contenido inapropiado. Por otro lado, la clase negativa (correos legítimos) proviene directamente del ámbito laboral y personal de los creadores originales del conjunto de datos.
+El conjunto de datos original está estructurado en 4601 filas (correos electrónicos) y 58 columnas. De estas, 57 actúan como variables predictoras continuas (características extraídas mediante procesamiento de texto) y la última corresponde a la variable objetivo (\textit{target}). 
+\subsection{Naturaleza de las Variables Predictoras}
+Las características extraídas de cada correo electrónico no contienen el texto original, sino que representan métricas numéricas. Estas variables se dividen en tres grandes familias:
+\begin{enumerate}
+    \item \textbf{Frecuencia de palabras (48 atributos):} \texttt{word\_freq\_*}, estas variables miden el porcentaje de aparición de la palabra en el correo (por ejemplo: \textit{free}, \textit{money}, \textit{business}). Matemáticamente, se calculan contando el número de veces que aparece la palabra , dividiéndolo por el número total de palabras en el correo, y multiplicando el resultado por 100.
+    
+    \item \textbf{Frecuencia de caracteres especiales (6 atributos):} Bajo el prefijo \texttt{char\_freq\_*}, miden el porcentaje de aparición de caracteres no alfanuméricos clave, tales como los signos de exclamación (\texttt{!}) o el signo de dólar (\texttt{\$}), los cuales representan predictores extremadamente fuertes de correos maliciosos.
+    
+    \item \textbf{Secuencias de letras mayúsculas (3 atributos):} El uso de mayúsculas (ej.  "  COMPRE AHORA ",  "ULTIMA OPORTUNIDAD") es un patrón  clásico en el \textit{spam}. Estas variables, denominadas \texttt{capital\_run\_length\_*}, se veran reflejadas  a través de tres métricas:
+    \begin{itemize}
+        \item \textit{Average:} La longitud promedio de las secuencias de letras mayúsculas ininterrumpidas.
+        \item \textit{Longest:} La secuencia de letras mayúsculas más larga encontrada en todo el correo.
+        \item \textit{Total:} La suma total de todas las letras mayúsculas presentes en el mensaje.
+    \end{itemize}
+\end{enumerate}
+\subsection{El Problema de las Escalas}
+Al analizar los valores del conjunto de datos, surge un problema importante relacionado con las escalas numéricas. Por un lado, las variables que miden la frecuencia de palabras están expresadas en porcentajes, por lo que la  mayoría de sus valores se encuentran entre 0 y 5. Por otro lado, la variable \texttt{capital\_run\_length\_total} representa un conteo absoluto, con valores que pueden llegar a miles  un solo correo.
+Esta enorme diferencia de escalas es un problema  para las Máquinas de Soporte Vectorial (SVM),Dado que el SVM clasifica los datos calculando distancias geométricas (como la distancia euclidiana) entre los puntos, los números más grandes terminan dominando el cálculo. Si  el modelo es entrenado  con los datos en su formato original, el algoritmo le daría casi toda la importancia a la cantidad de mayúsculas solo porque sus números varían en miles.
+Para solucionar esto,sera necesaria una estandarizaciónprevia al entrenamiento de los modelos . Mediante el uso de herramientas de  como \texttt{StandardScaler}, todas las columnas numéricas se ajustan matemáticamente para tener una media de cero y una varianza de uno. Al igualar las escalas, nos aseguramos de que el algoritmo evalúe de manera justa todas las variables y le dé a cada característica el peso que  le corresponde.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \chapter{Metodología}
 \label{ch:metodologia}
 
-\section{Preparación y desbalanceo artificial}
-Partiendo de un conjunto de datos originalmente equilibrado, se procedio a eliminar de forma aleatoria filas correspondientes a la clase positiva (spam) para generar un dataset desequilibrado. De esta manera, conservé únicamente un 5\% de casos de spam, lo que permitió simular un entorno con un desbalanceo severo y más ajustado a la realidad de una bandeja de entrada habitual.
+\section{Preparación de los Datos}
+El trabajo comenzó con el procesamiento del conjunto de datos original. Como el objetivo era estudiar el comportamiento de los algoritmos frente a clases desbalanceadas, se eliminaron aleatoriamente instancias de la clase positiva hasta que los correos de spam representaran únicamente el 5\% del total.
 
-A continuación, se realizo la división de los datos en conjuntos de entrenamiento y testeo (\textit{train-test split}), asignando un 80\% de los datos para el entrenamiento de los modelos y el 20\% restante para la posterior etapa de evaluación.
+A continuación, el conjunto de datos se dividió en un 80\% para el entrenamiento de los modelos y el 20\% restante para las pruebas. Para evitar la filtración de información, la estandarización de las variables numéricas se realizó ajustando la herramienta \texttt{StandardScaler} exclusivamente con los datos de entrenamiento, transformando luego ambos conjuntos. Este paso es necesario para que los clasificadores basados en distancias (como SVM) funcionen correctamente.
 
-\section{Preprocesamiento y estandarización}
-Una vez realizada la partición del dataset, procedí a estandarizar las características utilizando la herramienta \texttt{StandardScaler} de la librería \textit{scikit-learn}. Para asegurar la integridad del experimento y evitar la filtración de datos (\textit{data leakage}), el ajuste (\textit{fit}) del escalador se realizó exclusivamente sobre el conjunto de entrenamiento, utilizándolo luego para transformar (\textit{transform}) ambos conjuntos. Este paso resultó fundamental para garantizar el correcto funcionamiento de los modelos basados en distancias, como las Máquinas de Soporte Vectorial.
-
-\section{Técnicas de balanceo (Oversampling)}
-Con los datos ya estandarizados, apliqué técnicas de sobremuestreo sobre el conjunto de entrenamiento para mitigar el impacto del desbalanceo. Específicamente, implementé los métodos SMOTE y ADASYN. En ambos algoritmos se configuró el parámetro \texttt{sampling\_strategy=0.4}, lo que permitió incrementar la clase minoritaria de forma sintética hasta que representara el 40\% del tamaño de la clase mayoritaria, alcanzando así una relación final aproximada de 70/30 en los datos de entrenamiento.
-
-\section{Entrenamiento de modelos}
-Tras el procesamiento y balanceo de los datos, sen entrenaron tres algoritmos de aprendizaje automático para comparar su comportamiento:
+\section{Balanceo y Entrenamiento}
+Para resolver el problema del desbalanceo durante el entrenamiento, se utilizaron diferentes técnicas de sobremuestreo. Primero se evaluaron los datos originales sin balancear para tener una base de comparación. Luego, se aplicaron los siguientes algoritmos para generar datos sintéticos:
 \begin{itemize}
-    \item Random Forest 
-    \item Máquinas de Soporte Vectorial 
-    \item Árbol de Decisión 
+    \item \textbf{SMOTE:} Crea nuevas muestras interpolando líneas entre los ejemplos de la clase minoritaria y sus vecinos.
+    \item \textbf{G-SMOTE:} Genera muestras dentro de una zona circular  alrededor de cada correo de clase positiva.
+    \item \textbf{ADASYN:} Genera más cantidad de muestras sintéticas en la frontera difícil donde las clases se mezclan.
+    \item \textbf{ADASYN + ENN (Híbrido):} Aplica ADASYN y luego usa el algoritmo de limpieza ENN para borrar el ruido en la frontera.
 \end{itemize}
-Para garantizar la reproducibilidad de todas las pruebas, se estableció una semilla aleatoria fija en cada uno de los clasificadores.
 
-\section{Evaluación de resultados}
-Finalmente, una vez finalizado el entrenamiento, evalué el desempeño de los modelos utilizando el conjunto de testeo (el 20\% de los datos originalmente reservados). Para analizar los resultados de manera integral y evitar los sesgos que produce la evaluación con datos desbalanceados, se registraron y contrastaron las métricas de \textit{Accuracy} (exactitud), \textit{Precision} (precisión), \textit{Recall} (sensibilidad) y \textit{F1-Score}.
+En lugar de balancear los datos a una proporción perfecta de 50/50 (lo cual causaba una caída en la Precisión debido al aumento de falsos positivos), se trabajo con una relación aproximada de 70/30 en el entrenamiento, preservando un mejor equilibrio en el modelo.
+
+Con estos datos preparados, se entrenaron tres modelos de clasificación: Random Forest, Máquinas de Soporte Vectorial (SVM) y Árbol de Decisión, manteniendo una semilla aleatoria fija para asegurar la reproducibilidad. En el caso particular de SVM, se comprobó experimentalmente que ajustar el umbral de decisión a 0.2 mejoraba de forma significativa la detección de la clase minoritaria sin incurrir en sobreajuste.
+
+Finalmente, el rendimiento de todos los algoritmos se midió sobre el conjunto de prueba (20\% reservado). Dado que la  (\textit{Accuracy}) suele ser engañosa en datos desbalanceados, la evaluación se centró en métricas más rigurosas:  (\textit{Recall}) para conocer el porcentaje de spam atrapado, (\textit{Precision}) para medir la confiabilidad de las alertas, y \textit{F1-Score} como métrica unificadora.
 \label{ch:resultados}
+\chapter{Resultados y discusión}
+\section{Análisis de Rendimiento frente al Desbalanceo}
+La primera fase del experimento consistió en evaluar el desempeño de los algoritmos sobre el conjunto de datos desbalanceado, sin aplicar técnicas de sobremuestreo. Como era de esperarse, los modelos priorizaron el \textit{Accuracy} clasificando casi todo como clase mayoritaria. El modelo base permitía que casi la mitad del spam ingresara sin ser detectado, confirmando la vulnerabilidad de los clasificadores estándar ante un desbalanceo del 5\%.
+Al aplicar las técnicas de generación de datos sintéticos, los tres algoritmos reaccionaron de manera diferente. ADASYN demostró ser la técnica de balanceo superior, superando consistentemente a SMOTE y G-SMOTE en todos los casos, por lo que el análisis profundo se centró en sus resultados:
+\begin{itemize}
+    \item \textbf{Árbol de Decisión:} Demostró ser el algoritmo más débil. Incluso con los datos balanceados mediante ADASYN,mostrando que el modelo no es eficiente a la hora de distinguir en la frontera etre correos legitimos y de spam logrando un recall de 58.6\%.
+    
+    \item \textbf{Random Forest:} Exhibió un comportamiento superior. Al ser entrenado con los datos de ADASYN, elevó su \textit{Recall} al 75.8\% manteniendo un altísimo \textit{Precision} del 81.4\% (logrando el \textit{F1-Score} global más alto del experimento, 0.7857). Esto lo consolida como un clasificador extremadamente seguro y confiable, ideal si la prioridad del sistema es evitar que correos legítimos terminen en la papelera.
+    
+    \item \textbf{SVM (con umbral optimizado a 0.2):} Fue el algoritmo que más se benefició de la inyección geométrica de ADASYN en la frontera. Logró la mejor tasa de detección de amenazas de todo el experimento, alcanzando un \textit{Recall} del 86.2\%. Superó a Random Forest en este aspecto crítico, aunque a costa de sacrificar algo de \textit{Precision} (71.4\%).
+\end{itemize}
+\section{Análisis de la Técnica Híbrida (ADASYN + ENN)}
+Una vez Elegido ADASYN como el modelo superior para el sobemuestreo de datos en este conjunto de datos se probo con una tecnica moderna que expande ADASYN limpiando la inyeccion de datos revisando los vecinos mas cercanos a los datos sinteticos.
+Todos los algoritmos sufrieron una caída en su rendimiento bajo esta limpieza. En el caso de SVM, la Precisión se desplomó del 71.4\% al 62.5\%, y en Random Forest cayó del 81.4\% al 73.3\%. Esto se explica porque en el filtrado de spam real, la frontera es intrínsecamente difusa (hay correos legítimos que usan palabras típicas de spam). ADASYN generó muestras valiosas en estos casos ambiguos, pero ENN las borró al considerarlas "ruido". Esto privó a todos los modelos de información crucial en la frontera, Llevando a una caida de los resultados frente a la Tecnica clasica.
+
+
+% --- GRÁFICOS DE RESULTADOS ---
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{accuracy_y_precision.png}
+    \caption{Impacto de las técnicas de sobremuestreo en las métricas de Accuracy y Precision para los distintos modelos evaluados.}
+    \label{fig:acc_prec}
+\end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{f1_y_recall.png}
+    \caption{Impacto de las técnicas de sobremuestreo en las métricas de F1-Score y Recall. Se observa la superioridad de ADASYN en la métrica de Recall para el modelo SVM.}
+    \label{fig:f1_recall}
+\end{figure}
 
 
 \chapter{Conclusiones}
 
-\bibliographystyle{plain}
+\bibliographystyle{unsrt}
 \bibliography{Referencias}
 \addcontentsline{toc}{chapter}{Bibliografía}
 
