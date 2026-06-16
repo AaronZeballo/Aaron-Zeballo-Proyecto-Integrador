@@ -364,14 +364,14 @@ La principal diferencia y ventaja de ADASYN frente a SMOTE es que presta mucha m
 Para lograr esto, el algoritmo primero calcula la distribución de densidad de la clase mayoritaria alrededor de cada ejemplo de la clase minoritaria. Con esa información, calcula un "ratio de dificultad" de aprendizaje para cada instancia. Luego, procede a crear una mayor cantidad de datos artificiales \textit{únicamente} alrededor de los ejemplos que resultaron ser más conflictivos de clasificar. De esta manera, el modelo concentra su esfuerzo en la frontera límite, evitando generar información innecesaria en zonas seguras que el clasificador ya domina.\cite{he2008adasyn}.}
 
 \paragraph{G-SMOTE (Geometric SMOTE) 
-Es una evolución geométrica directa del algoritmo SMOTE original. El problema del enfoque clásico de SMOTE es que crea los datos nuevos estrictamente sobre líneas rectas, lo que puede generar ruido si esas líneas cruzan cerca de la clase contraria. 
+Es una evolución geométrica directa del algoritmo SMOTE original. El problema del enfoque clásico de SMOTE es que crea los datos nuevos estrictamente sobre líneas rectas, lo que puede generar confusion al clasificador si esas líneas cruzan cerca de la clase contraria. 
 
 G-SMOTE soluciona esto definiendo una zona esférica alrededor de las instancias originales de la clase minoritaria, generando las nuevas muestras en cualquier punto dentro de ese volumen hiperespacial. La clave que hace a este algoritmo tan seguro y preciso es cómo define el tamaño de su esfera: antes de crearla, calcula la distancia euclidiana exacta hacia el ejemplo de la clase mayoritaria más cercano, y restringe el radio de generación para no cruzar nunca esa distancia límite. Esto permite crear ejemplos sumamente variados con la garantía matemática de que no invadirán el territorio de los correos legítimos.\cite{douzas2019gsmote}.}
 
 \paragraph{ADASYN + ENN 
 Este método híbrido combina la creación  de datos de ADASYN con una  etapa de limpieza algorítmica llamada \textit{Edited Nearest Neighbours} (ENN). 
 
-El proceso consta de dos fases. Primero, ADASYN inyecta nuevos datos sintéticos en las zonas más difíciles de clasificar para reforzar la presencia de la amenaza. Segundo, el algoritmo ENN revisa todo el conjunto de datos ampliado evaluando a los vecinos más cercanos (típicamente empleando $k=3$) de cada observación. Si detecta que un ejemplo (ya sea un correo real o uno sintético recién creado) tiene una mayoría de vecinos pertenecientes a la clase contraria, asume que es un dato ruidoso que confundirá al clasificador y lo elimina por completo. La sinergia de estos dos pasos permite entregarle al modelo unos datos de entrenamiento robustos pero excepcionalmente limpios.\cite{batista2004study}.}
+El proceso consta de dos fases. Primero, ADASYN inyecta nuevos datos sintéticos en las zonas más difíciles de clasificar para reforzar la presencia de la amenaza. Segundo, el algoritmo ENN revisa todo el conjunto de datos ampliado evaluando a los vecinos más cercanos (típicamente empleando $k=3$) de cada observación. Si detecta que un ejemplo (ya sea un correo real o uno sintético recién creado) tiene una mayoría de vecinos pertenecientes a la clase contraria, asume que es un dato  que confundirá al clasificador y lo elimina por completo. La sinergia de estos dos pasos permite entregarle al modelo unos datos de entrenamiento robustos pero excepcionalmente limpios.\cite{batista2004study}.}
 
 \vspace{0.5cm}
 \noindent Inicialmente se buscó igualar el conjunto a una proporción exacta de 50/50, pero se evidenció que este exceso de ejemplos sintéticos provocaba que muchos correos legítimos fueran erróneamente clasificados como \textit{spam}. Durante las pruebas de ajuste, se observó que balancear los datos hasta lograr una relación aproximada del $70\%$ de correos legítimos y un $30\%$ de \textit{spam} arrojaba los mejores resultados globales. Esta proporción logró el equilibrio perfecto: permitió que los algoritmos aprendieran a detectar las amenazas con alta eficacia, manteniendo al mismo tiempo un control sobre la tasa de falsos positivos.
@@ -450,20 +450,6 @@ Finalmente, luego de la búsqueda iterativa, se concluyó que los mejores parám
 
 
 \label{ch:resultados}
-\chapter{Resultados y discusión}
-\section{Análisis de Rendimiento frente al Desbalanceo}
-La primera fase del experimento consistió en evaluar el desempeño de los algoritmos sobre el conjunto de datos desbalanceado, sin aplicar técnicas de sobremuestreo. Como era de esperarse, los modelos priorizaron el \textit{Accuracy} clasificando casi todo como clase mayoritaria. El modelo base permitía que casi la mitad del spam ingresara sin ser detectado, confirmando la vulnerabilidad de los clasificadores estándar ante un desbalanceo del 5\%.
-Al aplicar las técnicas de generación de datos sintéticos, los tres algoritmos reaccionaron de manera diferente. ADASYN demostró ser la técnica de balanceo superior, superando consistentemente a SMOTE y G-SMOTE en todos los casos, por lo que el análisis profundo se centró en sus resultados:
-\begin{itemize}
-    \item \textbf{Árbol de Decisión:} Demostró ser el algoritmo más débil. Incluso con los datos balanceados mediante ADASYN, mostrando que el modelo no es eficiente a la hora de distinguir en la frontera entre correos legítimos y de spam logrando un recall de 58.6\%.
-    
-    \item \textbf{Random Forest:} Exhibió un comportamiento superior. Al ser entrenado con los datos de ADASYN, elevó su \textit{Recall} al 75.8\% manteniendo un altísimo \textit{Precision} del 81.4\% (logrando el \textit{F1-Score} global más alto del experimento, 0.7857). Esto lo consolida como un clasificador extremadamente seguro y confiable, ideal si la prioridad del sistema es evitar que correos legítimos terminen en la papelera.
-    
-    \item \textbf{SVM (con umbral optimizado a 0.2):} Fue el algoritmo que más se benefició de la inyección geométrica de ADASYN en la frontera. Logró la mejor tasa de detección de amenazas de todo el experimento, alcanzando un \textit{Recall} del 86.2\%. Superó a Random Forest en este aspecto crítico, aunque a costa de sacrificar algo de \textit{Precision} (71.4\%).
-\end{itemize}
-\section{Análisis de la Técnica Híbrida (ADASYN + ENN)}
-Una vez Elegido ADASYN como el modelo superior para el sobemuestreo de datos en este conjunto de datos se probó con una técnica moderna que expande ADASYN limpiando la inyección de datos revisando los vecinos más cercanos a los datos sintéticos.
-Todos los algoritmos sufrieron una caída en su rendimiento bajo esta limpieza. En el caso de SVM, la Precisión se desplomó del 71.4\% al 62.5\%, y en Random Forest cayó del 81.4\% al 73.3\%. Esto se explica porque en el filtrado de spam real, la frontera es intrínsecamente difusa (hay correos legítimos que usan palabras típicas de spam). ADASYN generó muestras valiosas en estos casos ambiguos, pero ENN las borró al considerarlas ``ruido''. Esto privó a todos los modelos de información crucial en la frontera, Llevando a una caida de los resultados frente a la Tecnica clasica.
 
 
 % --- GRÁFICOS DE RESULTADOS ---
