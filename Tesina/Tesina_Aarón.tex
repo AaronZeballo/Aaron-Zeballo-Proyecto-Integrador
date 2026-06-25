@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt]{book}
+\documentclass[a4paper,11pt, openany]{book}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -481,7 +481,7 @@ El primer desafío  fue determinar la cantidad óptima de datos artificiales a g
 Sin embargo, en la práctica se evidenció que este exceso de ejemplos sintéticos generaba un efecto no deseado: los clasificadores se volvían demasiado sensibles. Al forzar a los modelos a aprender sobre una cantidad tan grande de ejemplos generados artificialmente, se provocaba que muchos correos legítimos fueran erróneamente clasificados como \textit{spam}. Este aumento de falsos positivos se ve reflejado en la severa caída de la métrica de Precisión durante estas pruebas.
 En el caso particular de la Máquina de Soporte Vectorial (SVM), la Precisión cayó a niveles cercanos al $0.35$, indicando un aumento en la  cantidad de falsos positivos (correos legítimos marcados erróneamente como \textit{spam}).
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \makebox[\textwidth][c]{\includegraphics[width=1.08\textwidth]{accuracy_y_precision_5050.png}}
     \caption{Impacto del balanceo (50/50): \textit{Accuracy} y \textit{Precision}.}
