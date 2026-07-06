@@ -28,6 +28,7 @@
 \usepackage{longtable}
 \usepackage{booktabs}
 \usepackage{colortbl}
+\usepackage{hhline}
 \usepackage{multirow}
 \usepackage{amsmath}
 \usepackage{etoolbox}
@@ -97,8 +98,7 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 \definecolor{FPcolor}{HTML}{F4CCCC} % Rojo muy claro para FP
 \definecolor{FNcolor}{HTML}{E06666} % Rojo claro para FN
 
-\title{Estudio de Técnicas de Aprendizaje Automático
-Supervisado usando Sobremuestreo de Datos}
+\title{Estudio de Técnicas de Aprendizaje Automático usando Sobremuestreo de Datos}
 \author{Autor: Aarón Zeballo  \\ Tutora: Dra. Andrea Rey}
 \date{Universidad Nacional de Hurlingham (UNAHUR)}
 \titlepic{\vspace{12cm}\includegraphics[width=0.15\textwidth]{logo.jpg}}
@@ -133,7 +133,7 @@ Supervisado usando Sobremuestreo de Datos}
 
 	\tableofcontents
 	
-	\addcontentsline{toc}{chapter}{Índice de Figures}
+	\addcontentsline{toc}{chapter}{Índice de Figuras}
 	\renewcommand{\listfigurename}{Índice de Figuras}
 	\listoffigures
 	
@@ -145,11 +145,14 @@ Supervisado usando Sobremuestreo de Datos}
 
 \chapter*{Resumen}
 
-\noindent
+Los modelos de aprendizaje automático se enfrentan al desequilibrio de clases; este desequilibrio perjudica el aprendizaje de los algoritmos, los cuales tienden a ignorar la clase minoritaria y pierden capacidad predictiva. Para tratar de solucionar esta problemática, el presente trabajo se centró en el estudio de distintos algoritmos de sobremuestreo de datos como solución para equilibrar las clases. Se evaluaron técnicas clásicas como SMOTE y ADASYN, así como sus evoluciones modernas, poniéndolas a prueba con una problemática importante en la ciberseguridad: la detección de correos no deseados (\textit{spam}). Para medir su efectividad se utilizaron tres clasificadores: Árbol de Decisión, \textit{Random Forest} y Máquinas de Soporte Vectorial (SVM).
+
+Los resultados mostraron un buen desempeño por parte de las técnicas de sobremuestreo para contrarestar el desbalanceo en las clases. Específicamente, el método ADASYN combinado con SVM tuvo el mejor rendimiento a la hora de detectar \textit{spam}, logrando alcanzar un \textit{Recall} de 0.86 y un \textit{F1-Score} de 0.75 sobre la clase minoritaria. Esto demostró que, a partir de un conjunto de datos fuertemente desbalanceado y posteriormente sobremuestreado, es posible obtener resultados predictivos muy cercanos a los que se pueden obtener a partir de un conjunto de datos con mayor equilibrio entre clases y ampliamente superior a los de un conjunto de datos desbalanceado.
 
 
 
-\chapter{Introducción y Marco Teórico}
+
+\chapter{Introducción}
 \label{ch:introducción}
 
 \section{Introducción}
@@ -174,7 +177,7 @@ A nivel corporativo y a gran escala, el \textit{spam} inunda las redes empresari
 
 En el ámbito personal, los usuarios comunes son los más vulnerables. Diariamente se enfrentan a correos engañosos diseñados con ingeniería social para parecer alertas de sus bancos o mensajes de la administración pública. Caer en estos engaños puede resultar en la sustracción no autorizada de fondos, fraudes con tarjetas de crédito, robo de identidad o la inutilización total de sus dispositivos personales a causa de virus destructivos.
 
-Para ejemplificar la problemática, se considera oportuno mostrar ejemplos recientes que demuestran el peligro al que se exponen las empresas y usuarios si un correo malicioso pasa los filtros de seguridad
+Para ejemplificar la problemática, se considera oportuno mostrar ejemplos recientes que demuestran el peligro al que se exponen las empresas y usuarios si un correo malicioso pasa los filtros de seguridad.
 
 Un caso emblemático es el de la red Emotet, considerada por Europol como el \textit{malware} más peligroso del mundo hasta su desmantelamiento en 2021~\cite{europol2021emotet}. Emotet operaba principalmente a través de campañas automatizadas de \textit{spam}. Los atacantes enviaban correos electrónicos que simulaban ser facturas legítimas, notificaciones de envíos o alertas de bancos conocidos, que contenían documentos infectados. Una vez que el usuario abría el archivo, el virus se instalaba en silencio, permitiendo a los delincuentes robar credenciales bancarias o instalar \textit{ransomware} en toda la red de la empresa. Este método de propagación por correo causó daños globales estimados en cientos de millones de dólares.
 
@@ -199,7 +202,7 @@ El trabajo se propone comparar cómo funcionan diferentes modelos de Aprendizaje
 Para alcanzar esta meta, se establecerán los siguientes objetivos:
 \begin{itemize}
     \item Implementar y comparar el rendimiento de tres clasificadores: Árbol de Decisión, Random Forest y Máquinas de Soporte Vectorial (SVM).
-    \item Evaluar distintas técnicas de balanceo de datos, partiendo desde el clásico SMOTE ,Pasando por ADASYN  enfocado en las fronteras de decisión y métodos más modernos que buscan ser la evolución de los anteriores, tales como G-SMOTE y ADASYN + ENN.
+    \item Evaluar distintas técnicas de balanceo de datos, partiendo desde el clásico SMOTE, pasando por ADASYN enfocado en las fronteras de decisión y métodos más modernos que buscan ser la evolución de los anteriores, tales como G-SMOTE y ADASYN + ENN.
     \item Comparar y mostrar resultados a través de métricas robustas frente al desbalanceo tales como \textit{recall} y \textit{F1-Score}.
 \end{itemize}
 
@@ -219,22 +222,20 @@ A pesar de su  éxito,  SMOTE tiene una debilidad: genera datos sintéticos de m
 Para solucionar este defecto, Haibo He, Yang Bai, Shutao Li y Edwardo García. \cite{he2008adasyn} desarrollaron en 2008 el algoritmo ADASYN (\textit{Adaptive Synthetic}). ADASYN mejoró la propuesta de SMOTE agregando una capa de calculo extra. El algoritmo evalúa primero qué tan difícil es de clasificar cada caso de la clase minoritaria. Luego, procede a la creación de datos sintéticos únicamente alrededor de aquellos casos  que están en zonas donde hay tanto ejemplos de la clase mayoritaria como de la minoritaria. De esta forma, el algoritmo le presta mayor atención a los casos engañosos y no en las regiones que el modelo ya domina y no son conflictivas.
 
 
-The búsqueda por lograr la mejora en la creación de datos sintéticos siguió evolucionando. En años recientes, investigaciones como las de Douzas y Bacao propusieron \textit{Geometric} SMOTE (G-SMOTE) \cite{douzas2019gsmote}. En lugar de trazar líneas rectas que pueden invadir el territorio de la clase mayoritaria, G-SMOTE restringe la generación de datos sintéticos al interior de  esferas alrededor de las observaciones de la clase minoritaria, reduciendo la creación de ruido.
+La búsqueda por lograr la mejora en la creación de datos sintéticos siguió evolucionando. En años recientes, investigaciones como las de Douzas y Bacao propusieron \textit{Geometric} SMOTE (G-SMOTE) \cite{douzas2019gsmote}. En lugar de trazar líneas rectas que pueden invadir el territorio de la clase mayoritaria, G-SMOTE restringe la generación de datos sintéticos al interior de  esferas alrededor de las observaciones de la clase minoritaria, reduciendo la creación de ruido.
 Paralelamente, investigaciones clásicas como las de Batista  \cite{batista2004study} demostraron que, en conjuntos de datos muy complejos, crear datos no siempre es suficiente. Esto dio origen a los métodos híbridos, que combinan técnicas generativas (como SMOTE) con algoritmos de limpieza (como \textit{Edited Nearest Neighbours}, ENN). En este enfoque, primero se crean datos sintéticos de la clase minoritaria y luego se utilizan algoritmos de limpieza para borrar todos los ejemplos que hayan quedado mal posicionados. Este doble esfuerzo produce zonas de decisión mejores.
 
 \section{Conjunto de Datos}
 Para el desarrollo de este trabajo se utilizó el conjunto de datos público \textit{Spam Email Classification}  \textit{https://www.kaggle.com/datasets/somesh24/spambase}. La clase positiva (\textit{spam}) en este conjunto de datos incluye anuncios de productos no solicitados, correos con potencial de estafa  y contenido inapropiado. Por otro lado, la clase negativa (correos legítimos) proviene directamente del ámbito laboral y personal de los creadores originales del conjunto de datos.
-El conjunto de datos original está estructurado en 4601 registros (correos electrónicos) y 58 variables (detalladas en la Tabla \ref{tab:variables_spambase}). De estas, 57 actúan como variables predictoras continuas (características extraídas mediante procesamiento de texto) y la última corresponde a la variable objetivo (\textit{target}) indicando si es un correo legitimo o de \textbf{spam}. 
+El conjunto de datos original está estructurado en 4601 registros (correos electrónicos) y 58 variables (detalladas en la Tabla \ref{tab:variables_spambase}). De estas, 57 actúan como variables predictoras continuas (características extraídas mediante procesamiento de texto) y la última corresponde a la variable objetivo (\textit{target}) indicando si es un correo legítimo o de \textbf{spam}. 
 
 \begin{longtable}{|c|l|l|}
 \caption{Descripción de las variables del conjunto de datos Spam Base} \label{tab:variables_spambase} \\
 \hline
-\rowcolor[HTML]{D9EAD3} 
 \textbf{Índice} & \textbf{Nombre de la Variable} & \textbf{Descripción} \\ \hline
 \endfirsthead
 \multicolumn{3}{c}{{\bfseries \tablename\ \thetable{} -- Continuación de la página anterior}} \\
 \hline
-\rowcolor[HTML]{D9EAD3} 
 \textbf{Índice} & \textbf{Nombre de la Variable} & \textbf{Descripción} \\ \hline
 \endhead
 \hline \multicolumn{3}{|r|}{{Continúa en la siguiente página...}} \\ \hline
@@ -326,7 +327,9 @@ Las características extraídas de cada correo electrónico no contienen el text
 \end{enumerate}
 \subsection{El Problema de las Escalas}
 Al analizar los valores del conjunto de datos, surge un problema importante relacionado con las escalas numéricas. Por un lado, las variables que miden la frecuencia de palabras están expresadas en porcentajes, por lo que la  mayoría de sus valores se encuentran entre 0 y 5. Por otro lado, la variable \texttt{capital\_run\_length\_total} representa un conteo absoluto, con valores que pueden llegar a miles en un solo correo.
-Esta enorme diferencia de escalas es un problema  para las Máquinas de Soporte Vectorial (SVM), dado que el SVM clasifica los datos calculando distancias geométricas (como la distancia euclidiana) entre los puntos, los números más grandes terminan dominando el cálculo. Si el modelo es entrenado con los datos en su formato original, el algoritmo le daría casi toda la importancia a la cantidad de mayúsculas solo porque sus números varían en miles.
+
+Esta diferencia de escalas es un problema  para las Máquinas de Soporte Vectorial (SVM), dado que el SVM clasifica los datos calculando distancias geométricas (como la distancia euclidiana) entre los puntos, los números más grandes terminan dominando el cálculo. Si el modelo es entrenado con los datos en su formato original, el algoritmo le daría casi toda la importancia a la cantidad de mayúsculas solo porque sus números varían en miles.
+
 Para solucionar esto, será necesaria una estandarización previa al entrenamiento de los modelos. Mediante el uso de herramientas como \texttt{StandardScaler}, todas las variables numéricas se ajustan matemáticamente para tener una media de cero y una varianza de uno. Al igualar las escalas, nos aseguramos de que el algoritmo evalúe de manera justa todas las variables y le dé a cada característica el peso que  le corresponde.
 
 \chapter{Metodología}
@@ -385,18 +388,25 @@ Una vez que los datos fueron debidamente preprocesados y balanceados, se procedi
     \centering
     \renewcommand{\arraystretch}{1.5}
     \caption{Parámetros predeterminados utilizados en los clasificadores basados en árboles (scikit-learn).}
+    \begin{adjustbox}{max width=\textwidth}
     \begin{tabular}{|l|c|c|}
         \hline
         \textbf{Parámetro} & \textbf{Árbol de Decisión} & \textbf{Bosque Aleatorio} \\
         \hline
         Criterio de partición (\texttt{criterion}) & \texttt{gini} & \texttt{gini} \\
+        \hline
         Cantidad de árboles (\texttt{n\_estimators}) & - & $100$ \\
+        \hline
         Profundidad máxima (\texttt{max\_depth}) & Ninguna & Ninguna \\
+        \hline
         Muestras mínimas para dividir (\texttt{min\_samples\_split}) & $2$ & $2$ \\
+        \hline
         Muestras mínimas por hoja (\texttt{min\_samples\_leaf}) & $1$ & $1$ \\
+        \hline
         Características por división (\texttt{max\_features}) & Todas & Raíz cuadrada (\texttt{sqrt}) \\
         \hline
     \end{tabular}
+    \end{adjustbox}
     \label{tab:parametros_arboles}
     
     \vspace{1cm}
@@ -407,8 +417,11 @@ Una vez que los datos fueron debidamente preprocesados y balanceados, se procedi
         \textbf{Parámetro} & \textbf{Valor (SVM)} \\
         \hline
         Regularización (\texttt{C}) & $1.0$ \\
+        \hline
         Tipo de Kernel (\texttt{kernel}) & \texttt{rbf} \\
+        \hline
         Coeficiente Kernel (\texttt{gamma}) & \texttt{scale} \\
+        \hline
         Pesos de las clases (\texttt{class\_weight}) & Ninguno (\texttt{None}) \\
         \hline
     \end{tabular}
@@ -429,7 +442,7 @@ donde $p(c|t)$ representa la proporción de ejemplos que pertenecen a una de las
 \paragraph{Bosques Aleatorios \cite{breiman2001random}.} El algoritmo de Random Forest (Bosque Aleatorio) implementa un proceso conocido como \textit{Bagging} (\textit{Bootstrap Aggregating}). En lugar de construir un solo árbol, este método construye múltiples árboles independientes. La clave de su éxito radica en el uso de dos procesos aleatorios durante su creación:
 \begin{enumerate}
     \item \textbf{\emph{Bootstrap}}: Cada árbol se entrena con una muestra aleatoria distinta de los correos originales (con reemplazo).
-    \item \textbf{Selección de atributos:}Al momento de realizar las divisiones lógicas, cada árbol solo puede evaluar un subconjunto aleatorio de las variables. Esto genera muchos árboles con distintas evaluaciones que servirán para evaluar en un futuro las nuevas instancias sin el riesgo de que, durante la fase de entrenamiento, el clasificador se haya sobreentrenado.
+    \item \textbf{Selección de atributos:} Al momento de realizar las divisiones lógicas, cada árbol solo puede evaluar un subconjunto aleatorio de las variables. Esto genera muchos árboles con distintas evaluaciones que servirán para evaluar en un futuro las nuevas instancias sin el riesgo de que, durante la fase de entrenamiento, el clasificador se haya sobreentrenado.
 \end{enumerate}
 
 Finalmente, cuando llega un correo nuevo (representado matemáticamente como un vector de características $\boldsymbol{x}$), se realiza el proceso de agregación (\emph{Aggregating}): todos los árboles del bosque lo analizan individualmente y emiten su predicción. Para este caso binario, la clase final del correo ($\widehat{y}$) se decide por \textbf{voto mayoritario}, eligiendo la clase (ya sea \textit{spam} o legítimo) que reciba la mayor cantidad de votos:
@@ -440,6 +453,7 @@ Finalmente, cuando llega un correo nuevo (representado matemáticamente como un 
 donde $A$ es la cantidad total de árboles en el bosque y $\mathbb{I}$ es una función indicadora que suma un voto ($1$) cada vez que un árbol $a$ vota por una clase en particular $c$. Este enfoque combinado permite compensar los errores individuales y logra un modelo predictivo más estable.
 
 \paragraph{Máquinas de Soporte Vectorial (SVM) \cite{cortes1995support}.} Este algoritmo aborda la clasificación buscando el hiperplano óptimo que produzca el mayor espacio posible entre las clases. A diferencia de otros métodos, la SVM no elige cualquier separación, sino que busca un \textbf{Clasificador de Margen Maximal}; es decir, el hiperplano que mejor separe los correos \textit{spam} de los legítimos basándose exclusivamente en las instancias más críticas (los vectores de soporte).
+
 Para lidiar con correos atípicos (\textit{outliers}) y evitar el sobreajuste, la librería \texttt{scikit-learn} \cite{pedregosa2011scikit} implementa por defecto un \textbf{margen suave}. Siguiendo los principios de este algoritmo, se sacrifica la idea de una separación perfecta (permitiendo ciertas penalidades o errores durante el entrenamiento) para lograr una mayor robustez de clasificación general.
 Matemáticamente, la decisión de clasificar un nuevo correo $\boldsymbol{x}$ se toma evaluando su posición respecto a la frontera mediante la siguiente función:
 \begin{equation}
@@ -460,14 +474,18 @@ Este método automatizado entrena y evalúa el modelo múltiples veces, probando
 \caption{Grilla de hiperparámetros evaluados y ajustados para el modelo SVM.}
 \label{tab:svm_grid}
 \renewcommand{\arraystretch}{1.5}
-\begin{tabular}{ll}
+\begin{tabular}{|l|l|}
 \hline
 \textbf{Parámetro} & \textbf{Valores Evaluados} \\
 \hline
 \texttt{C} (Parámetro de regularización) & $0.001$, $0.01$, $0.1$, $1$, $10$, $15$, $20$, $25$ \\
+\hline
 \texttt{kernel} (Tipo de frontera) & \texttt{linear}, \texttt{poly}, \texttt{rbf}, \texttt{sigmoid} \\
+\hline
 $\gamma$ (\texttt{gamma}) (Influencia local) & \texttt{scale}, \texttt{auto}, $0.001$, $0.01$, $0.1$, $1$ \\
+\hline
 \texttt{degree} (Grado del polinomio) & $2, 3, \dots, 10$ \\
+\hline
 Umbral de Decisión (\emph{Threshold}) & $0.5$ (Por defecto), $0.2$ (Optimizado) \\
 \hline
 \end{tabular}
@@ -495,12 +513,14 @@ En este capítulo se presentan los resultados de los experimentos realizados. Pa
 
 
 
-\section{Resultados de las tecnicas de sobremuestreo}
- Los primeros resultados obtenidos al balancear el conjunto de datos a una proporción 50/50 se pueden observar en la Figura \ref{fig:metricas_5050}.Luego de esos resultados se procedió a analizar múltiples niveles de sobremuestreo para encontrar uno que tenga un buen desempeño en las métricas que se usaron para evaluar. Se observó que ajustar la proporción de los datos hasta lograr una relación aproximada del $70\%$ de correos legítimos y un $30\%$ de \textit{spam} arrojaba los mejores resultados globales (ver Tabla \ref{tab:tabla_justificacion}). Esta proporción logró compensar las clases adecuadamente: permitió que los algoritmos detecten las amenazas eficientemente, manteniendo al mismo tiempo un control sobre los falsos positivos.
-
- Al evaluar la métrica de \textit{Accuracy}, se evidencia que esta se mantiene elevada en todos los escenarios (variando entre el $95\%$ y el $98\%$). Por este motivo, el \textit{Accuracy} fue descartado como metrica para evaluar la eficiencia de sobremuestreo.
+\section{Resultados de las técnicas de sobremuestreo}
+ Los primeros resultados obtenidos al balancear el conjunto de datos a una proporción 50/50 se pueden observar en la Figura \ref{fig:metricas_5050}. Luego de esos resultados se procedió a analizar múltiples niveles de sobremuestreo para encontrar uno que tenga un buen desempeño en las métricas que se usaron para evaluar. Se observó que ajustar la proporción de los datos hasta lograr una relación aproximada del $70\%$ de correos legítimos y un $30\%$ de \textit{spam} arrojaba los mejores resultados globales (ver Tabla \ref{tab:tabla_justificacion}). Esta proporción logró compensar las clases adecuadamente: permitió que los algoritmos detecten las amenazas eficientemente, manteniendo al mismo tiempo un control sobre los falsos positivos.
  
- En cuanto a la \textit{Precision}, por un lado el método G-SMOTE, gracias a su restricción geométrica limitando la generacion de ejemplos cerca de instancias de la clase mayoritaria al momento del sobremuestreo, resultó ser el más seguro, logrando elevar la \textit{Precision} del Random Forest hasta un $0.86$. En contraparte, la incorporación de la fase de limpieza con ADASYN+ENN demostró una caída en los resultados, eliminando instancias en zonas con las clases mezcladas y provocando una caída generalizada en la \textit{Precision} de todos los modelos.
+
+ Al evaluar la métrica de \textit{Accuracy}, se evidencia que esta se mantiene elevada en todos los escenarios (variando entre el $95\%$ y el $98\%$). Por este motivo, el \textit{Accuracy} fue descartado como métrica para evaluar la eficiencia del sobremuestreo.
+ 
+ 
+ En cuanto a la \textit{Precision}, por un lado el método G-SMOTE, gracias a su restricción geométrica limitando la generación de ejemplos cerca de instancias de la clase mayoritaria al momento del sobremuestreo, resultó ser el más seguro, logrando elevar la \textit{Precision} del Random Forest hasta un $0.86$. En contraparte, la incorporación de la fase de limpieza con ADASYN+ENN demostró una caída en los resultados, eliminando instancias en zonas con las clases mezcladas y provocando una caída generalizada en la \textit{Precision} de todos los modelos.
 
 
 
@@ -513,8 +533,11 @@ En este capítulo se presentan los resultados de los experimentos realizados. Pa
         \textbf{Proporción de Clases} & \textbf{\textit{Precision}} & \textbf{\textit{Recall}} & \textbf{\textit{F1-Score}} \\
         \hline
         50/50 & $0.5556$ & $0.8621$ & $0.6757$ \\
+        \hline
         60/40 & $0.6098$ & $0.8621$ & $0.7143$ \\
+        \hline
         \textbf{70/30} & \textbf{0.6757} & \textbf{0.8621} & \textbf{0.7576} \\
+        \hline
         80/20 & $0.6471$ & $0.7586$ & $0.6984$ \\
         \hline
     \end{tabular}
@@ -538,7 +561,7 @@ Por un lado, si la prioridad es evitar a toda costa que un correo legítimo term
 
 En contraparte, si el objetivo central es la seguridad y se busca maximizar la captura de correos \textit{spam}, la Máquina de Soporte Vectorial (SVM) entrenada con ADASYN (calibrada con un umbral de decisión más riguroso de $0.2$) es la ganadora. Esta configuración logra incrementar el Recall hasta un $0.86$, detectando la inmensa mayoría de las amenazas. A cambio de esta alta sensibilidad a la hora de detectar \textit{spam}, el modelo presenta una \textit{Precision} más baja ($0.71$), lo que implica un incremento en los falsos positivos; igualmente, el modelo logra sostener un buen \textit{F1-Score} de $0.78$.
 
-\section{Comparación de datos sinteticos frente a originales}
+\section{Comparación de datos sintéticos frente a originales}
 
 Finalmente, se comparó el rendimiento del método de sobremuestreo contra el conjunto de datos \textit{SpamBase} original. Este conjunto  contiene aproximadamente un 40\% de correos \textit{spam}. Al entrenar la Máquina de Soporte Vectorial (SVM) con estos datos sin alterar, se logró un \textit{Recall} de $0.89$.
 
@@ -554,6 +577,17 @@ Esta comparación confirma que las técnicas de sobremuestreo tienen un desempe�
     \caption{Comparación de métricas: Conjunto Original vs. Sobremuestreo ADASYN (70/30).}
     \label{fig:comparativa_original}
 \end{figure}
+
+\chapter{Conclusiones}
+\label{ch:conclusiones}
+
+Tras las pruebas realizadas, se concluye que no existe una técnica de sobremuestreo perfecta sino que depende de lo que se priorice:
+
+Si el objetivo principal es garantizar que los correos legítimos no sean bloqueados accidentalmente, la combinación de \textit{Random Forest} con el método G-SMOTE demostró ser la más efectiva. Esta configuración logró el \textit{F1-Score} más alto del estudio ($0.80$) y una excelente precisión, minimizando la pérdida de correos importantes para el usuario.
+
+Cuando se quiere detectar la mayor cantidad de correos maliciosos posibles a cambio de algún falso positivo, ADASYN combinado con Máquinas de Soporte Vectorial (SVM) es la combinación deseada. Este enfoque alcanzó un \textit{Recall} de $0.86$, identificando la inmensa mayoría de las amenazas.
+
+Finalmente, la comparación contra un conjunto de datos compuesto por instancias reales en su totalidad demostró buenos resultados por parte del conjunto sobremuestreado. Las técnicas aplicadas, especialmente ADASYN, permitieron que un modelo que en un principio estaba fuertemente desbalanceado recuperara en gran medida su capacidad de detectar \textit{spam}, acercando su rendimiento al de un modelo entrenado con datos originales abundantes. Esto muestra que las técnicas de sobremuestreo son una herramienta robusta y eficaz a la hora de trabajar con conjuntos de datos con cantidad de ejemplos dispares entre sus clases.
 
 \bibliographystyle{plainnat}
 \bibliography{Referencias}
