@@ -210,9 +210,9 @@ Paralelamente, investigaciones como las de Batista et al.~\cite{batista2004study
 
 \section{Motivación y Objetivo General}
 
-Identificar y filtrar correos maliciosos se debe hacer de forma automática y con un margen mínimo, ya que los dos tipos de errores posibles tienen consecuencias graves. Si el filtro es demasiado estricto y marca un correo normal como \textit{spam} (Falso Positivo), un usuario podría perder un correo de trabajo urgente, una oferta laboral o el aviso de vencimiento de un servicio. Por el contrario, si el filtro es demasiado laxo y deja pasar un correo peligroso tratándolo como legítimo (Falso Negativo), las consecuencias van desde el vaciamiento de una cuenta bancaria personal hasta la infección de toda una red empresarial por un virus. 
+Identificar y filtrar correos maliciosos se debería hacer de forma automática y con un margen mínimo de error, ya que los dos tipos de errores posibles tienen consecuencias graves. Si el filtro es demasiado estricto y marca un correo normal como \textit{spam} (Falso Positivo), un usuario podría perder un correo de trabajo urgente, una oferta laboral o el aviso de vencimiento de un servicio. Por el contrario, si el filtro es demasiado laxo y deja pasar un correo peligroso tratándolo como legítimo (Falso Negativo), las consecuencias van desde el vaciamiento de una cuenta bancaria personal hasta la infección de toda una red empresarial por un virus. 
 
-El problema es que existe una balanza entre estos dos errores: cuando buscamos que el filtro atrape absolutamente todas las amenazas, el sistema empieza a tratar correos electrónicos legítimos como si fueran correos no deseados. Encontrar el punto de equilibrio exacto entre detectar un \textit{spam} y que los usuarios no pierdan correos importantes resulta un factor determinante.
+El problema es que existe una balanza entre estos dos errores: si se busca que el filtro detecte absolutamente todas las amenazas, el sistema empieza a tratar correos electrónicos legítimos como si fueran correos no deseados. Encontrar el punto de equilibrio exacto entre identificar un correo \textit{spam} y que los usuarios no pierdan correos importantes resulta un factor determinante.
 
 El presente trabajo se propone comparar cómo funcionan diferentes modelos de Aprendizaje Automático frente a un conjunto de datos que ha sido equilibrado mediante la creación de ejemplos sintéticos artificiales.
 Para alcanzar esta meta, se establecen los siguientes objetivos:
@@ -505,35 +505,37 @@ Finalmente, luego de la búsqueda iterativa, se concluyó que los mejores parám
 
 \section{Métricas de Evaluación}
 
-Para evaluar el rendimiento de los modelos, teniendo a los correos \textit{spam} como la clase positiva y a los legítimos como la negativa, cada predicción del clasificador puede categorizarse en uno de los siguientes cuatro resultados:
+Para evaluar el rendimiento de los modelos, teniendo a los correos \textit{spam} como la clase positiva y a los legítimos como la negativa, cada predicción del clasificador puede categorizarse como un caso:
 \begin{itemize}
-    \item[] Verdadero Positivo (TP): Correo \textit{spam} clasificado correctamente como \textit{spam}.
-    \item[] Verdadero Negativo (TN): Correo legítimo clasificado correctamente como legítimo.
-    \item[] Falso Positivo (FP): Correo legítimo clasificado erróneamente como \textit{spam}.
-    \item[] Falso Negativo (FN): Correo \textit{spam} clasificado erróneamente como legítimo.
+    \item Verdadero Positivo (TP, \textit{True Positive}): correo \textit{spam} clasificado correctamente como \textit{spam};
+    \item Verdadero Negativo (TN, \textit{True Negative}): correo legítimo clasificado correctamente como legítimo;
+    \item Falso Positivo (FP, \textit{False Positive}): correo legítimo clasificado erróneamente como \textit{spam};
+    \item Falso Negativo (FN, \textit{False Negative}): correo \textit{spam} clasificado erróneamente como legítimo.
 \end{itemize}
 
-A partir de la cantidad total de cada uno de estos grupos, se pueden calcular las siguientes métricas de evaluación:
+A partir de la cantidad total de casos en cada uno de estos grupos, se pueden calcular las siguientes métricas de evaluación
 
 \begin{itemize}
-    \item[] Exactitud (\textit{Accuracy}): Es la proporción de correos que han sido correctamente clasificados sobre el total de observaciones.
+    \item Exactitud de predicción (\textit{Accuracy}): Es la proporción de correos que han sido correctamente clasificados sobre el total de observaciones y se obtiene como:
     \begin{equation}
-        \textit{Accuracy} = \frac{TP + TN}{TP + FP + TN + FN}
+        \textit{Accuracy} = \frac{\text{TP} + \text{TN}}{\text{TP} + \text{FP} + \text{TN} + \text{FN}}.
     \end{equation}
 
-    \item[] Precisión (\textit{Precision}): Mide la probabilidad de que un correo detectado como malicioso por el clasificador realmente lo sea. Para obtener un mayor valor de precisión, se deben reducir los Falsos Positivos.
+    \item Precisión (\textit{Precision}): Mide la probabilidad de que un correo detectado como malicioso por el clasificador realmente lo sea y se define como:
     \begin{equation}
-        \textit{Precision} = \frac{TP}{TP + FP}
+        \textit{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}.
     \end{equation}
+    Observar que para obtener un mayor valor de \textit{Precision}, se deben reducir los Falsos Positivos.
 
-    \item[] Sensibilidad (\textit{Recall}): Mide la probabilidad de que el clasificador detecte un caso positivo cuando en verdad lo es; es decir, qué porcentaje de todos los correos \textit{spam} reales el modelo logró atrapar. Para obtener un mayor valor, se deben reducir los Falsos Negativos.
+    \item Sensibilidad (\textit{Recall}): Mide la probabilidad de que el clasificador detecte un caso positivo cuando en verdad lo es; es decir, qué proporción de todos los correos \textit{spam} reales el modelo logró identificar, calculada como: 
     \begin{equation}
-        \textit{Recall} = \frac{TP}{TP + FN}
+        \textit{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}.
     \end{equation}
-
-    \item[] F1-\textit{Score}: Combina las medidas de \textit{Precision} y \textit{Recall} para devolver una medida de calidad más general del modelo.
+	Notar que para obtener un mayor valor de \textit{Recall}, se deben reducir los Falsos Negativos.
+	
+    \item F1-\textit{Score}: Combina las medidas de \textit{Precision} y \textit{Recall} para devolver una medida de calidad más general del modelo, a través de la siguiente fórmula:
     \begin{equation}
-        \textit{ F1-Score} = 2 \cdot \frac{\textit{Precision} \cdot \textit{Recall}}{\textit{Precision} + \textit{Recall}}
+        \text{F1-}\textit{Score} = 2 \cdot \frac{\textit{Precision} \cdot \textit{Recall}}{\textit{Precision} + \textit{Recall}}.
     \end{equation}
 \end{itemize}
 \chapter{Resultados}
