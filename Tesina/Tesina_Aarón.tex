@@ -212,9 +212,9 @@ Paralelamente, investigaciones como las de Batista et al.~\cite{batista2004study
 
 Identificar y filtrar correos maliciosos se debe hacer de forma automática y con un margen mínimo, ya que los dos tipos de errores posibles tienen consecuencias graves. Si el filtro es demasiado estricto y marca un correo normal como \textit{spam} (Falso Positivo), un usuario podría perder un correo de trabajo urgente, una oferta laboral o el aviso de vencimiento de un servicio. Por el contrario, si el filtro es demasiado laxo y deja pasar un correo peligroso tratándolo como legítimo (Falso Negativo), las consecuencias van desde el vaciamiento de una cuenta bancaria personal hasta la infección de toda una red empresarial por un virus. 
 
-El problema es que existe una balanza entre estos dos errores: cuando buscamos que el filtro  atrape absolutamente todas las amenazas, el sistema empieza a tratar correos electrónicos legítimos como si fueran correos no deseados. Encontrar el punto de equilibrio exacto entre detectar un \textit{spam} y que los usuarios no pierdan correos importantes resulta un factor determinante.
+El problema es que existe una balanza entre estos dos errores: cuando buscamos que el filtro atrape absolutamente todas las amenazas, el sistema empieza a tratar correos electrónicos legítimos como si fueran correos no deseados. Encontrar el punto de equilibrio exacto entre detectar un \textit{spam} y que los usuarios no pierdan correos importantes resulta un factor determinante.
 
-El presente trabajo se propone comparar cómo funcionan diferentes modelos de Aprendizaje Automático frente a un conjunto de datos que ha sido equilibrado mediante la creación de ejemplos sintéticos artificiales. 
+El presente trabajo se propone comparar cómo funcionan diferentes modelos de Aprendizaje Automático frente a un conjunto de datos que ha sido equilibrado mediante la creación de ejemplos sintéticos artificiales.
 Para alcanzar esta meta, se establecen los siguientes objetivos:
 \begin{itemize}
     \item Implementar y comparar el rendimiento de tres clasificadores: Árboles de Decisión, \textit{Random Forest} y Máquinas de Soporte Vectorial (SVM por sus siglas en inglés).
@@ -505,6 +505,37 @@ Finalmente, luego de la búsqueda iterativa, se concluyó que los mejores parám
 
 \section{Métricas de Evaluación}
 
+Para evaluar el rendimiento de los modelos, teniendo a los correos \textit{spam} como la clase positiva y a los legítimos como la negativa, cada predicción del clasificador puede categorizarse en uno de los siguientes cuatro resultados:
+\begin{itemize}
+    \item[] Verdadero Positivo (TP): Correo \textit{spam} clasificado correctamente como \textit{spam}.
+    \item[] Verdadero Negativo (TN): Correo legítimo clasificado correctamente como legítimo.
+    \item[] Falso Positivo (FP): Correo legítimo clasificado erróneamente como \textit{spam}.
+    \item[] Falso Negativo (FN): Correo \textit{spam} clasificado erróneamente como legítimo.
+\end{itemize}
+
+A partir de la cantidad total de cada uno de estos grupos, se pueden calcular las siguientes métricas de evaluación:
+
+\begin{itemize}
+    \item[] Exactitud (\textit{Accuracy}): Es la proporción de correos que han sido correctamente clasificados sobre el total de observaciones.
+    \begin{equation}
+        \textit{Accuracy} = \frac{TP + TN}{TP + FP + TN + FN}
+    \end{equation}
+
+    \item[] Precisión (\textit{Precision}): Mide la probabilidad de que un correo detectado como malicioso por el clasificador realmente lo sea. Para obtener un mayor valor de precisión, se deben reducir los Falsos Positivos.
+    \begin{equation}
+        \textit{Precision} = \frac{TP}{TP + FP}
+    \end{equation}
+
+    \item[] Sensibilidad (\textit{Recall}): Mide la probabilidad de que el clasificador detecte un caso positivo cuando en verdad lo es; es decir, qué porcentaje de todos los correos \textit{spam} reales el modelo logró atrapar. Para obtener un mayor valor, se deben reducir los Falsos Negativos.
+    \begin{equation}
+        \textit{Recall} = \frac{TP}{TP + FN}
+    \end{equation}
+
+    \item[] F1-\textit{Score}: Combina las medidas de \textit{Precision} y \textit{Recall} para devolver una medida de calidad más general del modelo.
+    \begin{equation}
+        \textit{ F1-Score} = 2 \cdot \frac{\textit{Precision} \cdot \textit{Recall}}{\textit{Precision} + \textit{Recall}}
+    \end{equation}
+\end{itemize}
 \chapter{Resultados}
 \label{ch:resultados}
 
@@ -590,7 +621,7 @@ Esta comparación confirma que las técnicas de sobremuestreo tienen un desempe�
 \chapter{Conclusiones}
 \label{ch:conclusiones}
 
-Tras las pruebas realizadas para evaluar distintas técnicas de balanceo de datosÑ: SMOTE, ADASYN, ADASYN + ENN, G-SMOTE, sobre los modelos de clasificación basados en Árboles de Decisión, \textit{Random Forest} y Máquinas de Soporte Vectorial, se concluye que no existe una técnica de sobremuestreo perfecta, sino que la misma depende de lo que se priorice. Si el objetivo principal es garantizar que los correos legítimos no sean bloqueados accidentalmente, la combinación de \textit{Random Forest} con el método G-SMOTE demostró ser la más efectiva. Esta configuración logró el F1-\textit{Score} más alto del estudio ($0.80$) y una \textit{Precision} de $0.85$; minimizando la pérdida de correos importantes para el usuario. Cuando se quiere detectar la mayor cantidad de correos maliciosos posibles a cambio de algún falso positivo, ADASYN combinado con Máquinas de Soporte Vectorial (SVM) es la mejor combinación. Este enfoque alcanzó un \textit{Recall} de $0.86$; identificando la inmensa mayoría de las amenazas. Finalmente, la comparación contra un conjunto de datos compuesto por instancias reales en su totalidad demostró buenos resultados por parte del conjunto sobremuestreado. Las técnicas aplicadas, especialmente ADASYN, permitieron que un modelo que fue entrenado usando un conjunto de datos que en un principio estaba fuertemente desbalanceado, mejorara en gran medida su capacidad de detectar correos \textit{spam}, acercando su rendimiento al de un modelo entrenado con datos originales balanceados. Esto muestra que las técnicas de sobremuestreo bajo estudio son una herramienta robusta y eficaz a la hora de trabajar con conjuntos de datos con cantidad de ejemplos dispares entre sus clases.
+Tras las pruebas realizadas para evaluar distintas técnicas de balanceo de datos: SMOTE, ADASYN, ADASYN + ENN, G-SMOTE, sobre los modelos de clasificación basados en Árboles de Decisión, \textit{Random Forest} y Máquinas de Soporte Vectorial, se concluye que no existe una técnica de sobremuestreo perfecta, sino que la misma depende de lo que se priorice. Si el objetivo principal es garantizar que los correos legítimos no sean bloqueados accidentalmente, la combinación de \textit{Random Forest} con el método G-SMOTE demostró ser la más efectiva. Esta configuración logró el F1-\textit{Score} más alto del estudio ($0.80$) y una \textit{Precision} de $0.85$; minimizando la pérdida de correos importantes para el usuario. Cuando se quiere detectar la mayor cantidad de correos maliciosos posibles a cambio de algún falso positivo, ADASYN combinado con Máquinas de Soporte Vectorial (SVM) es la mejor combinación. Este enfoque alcanzó un \textit{Recall} de $0.86$; identificando la inmensa mayoría de las amenazas. Finalmente, la comparación contra un conjunto de datos compuesto por instancias reales en su totalidad demostró buenos resultados por parte del conjunto sobremuestreado. Las técnicas aplicadas, especialmente ADASYN, permitieron que un modelo que fue entrenado usando un conjunto de datos que en un principio estaba fuertemente desbalanceado, mejorara en gran medida su capacidad de detectar correos \textit{spam}, acercando su rendimiento al de un modelo entrenado con datos originales balanceados. Esto muestra que las técnicas de sobremuestreo bajo estudio son una herramienta robusta y eficaz a la hora de trabajar con conjuntos de datos con cantidad de ejemplos dispares entre sus clases.
 
 \bibliographystyle{ieeetr}
 \bibliography{Referencias}
