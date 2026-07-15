@@ -28,7 +28,7 @@
         \item Riesgo de seguridad y estafas para usuarios.
     \end{itemize}
     \item \textbf{El rol del Machine Learning:} Los filtros basados en reglas estáticas quedaron obsoletos. Se requieren algoritmos capaces de detectar patrones.
-    \item El Gran Desafío: Entrenar estos modelos presenta un problema debido a los correos: el desbalanceo entre los legítimos y los de \textit{spam}.
+    \item \textbf{El Gran Desafío:} Entrenar estos modelos presenta un problema debido a los correos: el desbalanceo entre los legítimos y los de \textit{spam}.
   \end{itemize}
 \end{frame}
 
@@ -50,7 +50,7 @@
   \begin{table}
     \centering
     \small
-    \begin{tabular}{@{}llp{5cm}@{}}
+    \begin{tabular}{@{}lrp{5cm}@{}}
       \toprule
       \textbf{Familia de Variables} & \textbf{Atributos} & \textbf{Ejemplo / Unidad} \\
       \midrule
@@ -73,7 +73,7 @@
     \item \textbf{Consecuencia:} SVM sufre en su calidad predictiva dando atención casi exclusiva a las mayúsculas.
     \begin{itemize}
         \item Transforma las variables para tener Media = 0 y Varianza = 1.
-        \item Ajustado exclusivamente sobre datos de entrenamiento para evitar Data Leakage.
+        \item Ajustado exclusivamente sobre datos de entrenamiento para evitar \textit{Data Leakage}.
         \item Restaura la capacidad del algoritmo para evaluar todas las variables.
     \end{itemize}
   \end{itemize}
@@ -82,10 +82,10 @@
 \section{Técnicas de sobremuestreo}
 
 \begin{frame}{Técnica de sobremuestreo: SMOTE}
-  \textbf{Synthetic Minority Over-sampling Technique}
+  \textbf{\textit{Synthetic Minority Over-sampling Technique}}
   \begin{itemize}
     \item Algoritmo estándar en la industria para la creación de datos sintéticos.
-    \item Analiza instancias de la clase minoritaria (spam) y busca a sus $k$ vecinos más cercanos ($k=5$).
+    \item Analiza instancias de la clase minoritaria (\textit{spam}) y busca a sus $k$ vecinos más cercanos ($k=5$).
     \item Genera nuevos ejemplos trazando líneas rectas entre el ejemplo original y los vecinos elegidos al azar que sean necesarios.
     \item Desventaja: Genera datos uniformemente para toda la clase minoritaria, lo que puede perjudicar al clasificador si la línea cruza por zonas de correos legítimos.
   \end{itemize}
@@ -105,7 +105,7 @@
   \textbf{Adaptive Synthetic Sampling}
   \begin{itemize}
     \item Evolución que corrige el problema de SMOTE prestando mucha atención a las fronteras de decisión.
-    \item Calcula la densidad de probabilidad para definir qué tan ``difícil" de aprender es cada instancia de spam.
+    \item Calcula la densidad de probabilidad para definir qué tan ``difícil" de aprender es cada instancia de \textit{spam}.
     \item Concentra la creación de datos artificiales únicamente alrededor de los correos más difíciles de clasificar.
     \item Ventaja: Evita generar información en zonas que los modelos ya pueden separar fácilmente.
   \end{itemize}
@@ -171,7 +171,7 @@
   
   \vspace{0.3cm}
   \begin{center}
-      \scriptsize \textit{* Se utilizaron los parámetros por defecto de \texttt{scikit-learn}, únicamente cambiando manualmente el umbral de decisión del SVM a \textbf{0,2}}
+      \scriptsize \textit{* Se utilizaron los parámetros por defecto de} \texttt{scikit-learn}\textit{, únicamente cambiando manualmente el umbral de decisión del SVM a \textbf{0,2}.}
   \end{center}
 \end{frame}
 
@@ -181,7 +181,7 @@
 
 
 
-\begin{frame}{Justificación de la Proporción Óptima}
+\begin{frame}{Justificación de la proporción óptima}
   Se evaluaron múltiples niveles de sobremuestreo para encontrar el equilibrio ideal:
   \vspace{0.3cm}
   \begin{table}
@@ -200,63 +200,64 @@
   \end{table}
   
   \vspace{0.2cm}
-  La relación 70-30 aumenta el F1-Score sin sacrificar Recall.
+  La relación 70-30 aumenta el F1-\textit{Score} sin sacrificar el \textit{Recall}.
 \end{frame}
 
-\begin{frame}{Resultados con Proporción Óptima (70-30)}
+\begin{frame}{Resultados con proporción óptima (70-30)}
   \begin{figure}
     \centering
     \includegraphics[width=\textwidth,height=0.75\textheight,keepaspectratio]{metricas_7030_unificadas.png}
   \end{figure}
-  \vspace{-0.5cm}
+%  \vspace{-0.5cm}
   \begin{itemize}\scriptsize
-    \item \textbf{Random Forest (G-SMOTE):} Alcanzó la mayor Precision (\textbf{0,84}) y el mejor F1-Score (\textbf{0,80}).
-    \item \textbf{SVM (ADASYN):} Logró el mayor Recall, con un valor de \textbf{0,86}.
+    \item \textbf{Random Forest (G-SMOTE):} Alcanzó la mayor \textit{Precision} (\textbf{0,84}) y el mejor F1-\textit{Score} (\textbf{0,80}).
+    \item \textbf{SVM (ADASYN):} Logró el mayor \textit{Recall}, con un valor de \textbf{0,86}.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Comparativa: Sobremuestreo vs. Datos Originales}
+\begin{frame}{Comparativa: Sobremuestreo vs. datos originales}
+\vspace{-0.4cm}
   \begin{figure}
     \centering
     \includegraphics[width=\textwidth,height=0.7\textheight,keepaspectratio]{comparativa_original_vs_7030.png}
   \end{figure}
-  \vspace{-0.5cm}
-  \textbf{\scriptsize Impacto del Sobremuestreo (SVM + ADASYN):}
+  
+  \textbf{\scriptsize Impacto del sobremuestreo (SVM + ADASYN):}
   \begin{itemize}\scriptsize
-    \item Al aplicar ADASYN (70-30), el modelo eleva su Recall a 0,86.
-    \item Se aproxima fuertemente al rendimiento del modelo entrenado con el dataset original (Recall de 0,89), superando ampliamente al desbalanceado.
+    \item Al aplicar ADASYN (70-30), el modelo eleva su \textit{Recall} a 0,86.
+    \item Se aproxima fuertemente al rendimiento del modelo entrenado con el \textit{dataset} original (\textit{Recall} de 0,89), superando ampliamente al entrenamiento con el conjunto desbalanceado.
   \end{itemize}
 \end{frame}
 
 \section{Conclusiones}
 
-\begin{frame}{Conclusiones: Los Mejores resultados}
-  No existe un sobremuestreo perfecto; el ganador depende de la prioridad buscada.
+\begin{frame}{Conclusiones: Mejores resultados}
+  No existe un sobremuestreo perfecto; el ``ganador'' depende de la prioridad buscada.
   \vspace{0.4cm}
   
-  \textbf{1. Prioridad: Minimizar Falsos Positivos} 
+  \textbf{Prioridad: Minimizar Falsos Positivos} 
   \begin{itemize}
-      \item \textbf{Ganador:} Random Forest + G-SMOTE
-      \item Gracias a la restricción esférica, alcanzó la mejor Precision (0,84) y el mejor F1-Score (0,80) del estudio.
+      \item \textbf{Ganador:} \textit{Random Forest} + G-SMOTE
+      \item Gracias a la restricción esférica, alcanzó la mejor \textit{Precision} (0,84) y el mejor F1-\textit{Score} (0,80) del estudio.
   \end{itemize}
 
   \vspace{0.3cm}
-  \textbf{2. Prioridad: Máxima Detección} 
+  \textbf{Prioridad: Máxima Detección} 
   \begin{itemize}
       \item \textbf{Ganador:} SVM (Umbral ajustado a 0.2) + ADASYN
-      \item Enfoque si se prioriza detectar amenazas. Logró un  Recall de 0,86, detectando casi todas las amenazas a costo de permitir más falsos positivos.
+      \item Enfoque si se prioriza detectar amenazas. Logró un  \textit{Recall} de 0,86, detectando casi todas las amenazas a costo de permitir más falsos positivos.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Conclusiones: Sobremuestreo vs. Datos Reales}
+\begin{frame}{Conclusiones: Sobremuestreo vs. datos reales}
   \begin{itemize}
     \item \textbf{Comparativa Final:} 
-    Se evaluó el método de sobremuestreo ganador contra el conjunto \textit{SpamBase original} el cual poseía naturalmente un 40\% de spam.
+    Se evaluó el método de sobremuestreo ganador contra el conjunto \textit{SpamBase} original el cual poseía naturalmente un 40\% de \textit{spam}.
     \vspace{0.2cm}
     \item \textbf{Original vs Sobremuestreado:} 
-    Lógicamente, los datos originales demostraron una ligera superioridad (Recall de 0,89). 
-    \vspace{0.2cm}
-    \item Sin embargo, el modelo entrenado con ADASYN logró un Recall de 0,86 partiendo desde un desbalance del 5\%. 
+    Los datos originales demostraron una ligera superioridad (\textit{Recall} de 0,89). 
+    \\
+     Sin embargo, el modelo entrenado con ADASYN logró un \textit{Recall} de 0,86 partiendo desde un desbalance del 5\%. 
     \vspace{0.2cm}
     \item \textbf{Reflexión Final:} Esto demuestra que las técnicas de sobremuestreo son herramientas eficaces y robustas, capaces de recuperar casi por completo la capacidad predictiva de algoritmos limitados por la carencia de observaciones.
   \end{itemize}
